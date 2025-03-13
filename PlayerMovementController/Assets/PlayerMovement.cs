@@ -29,9 +29,9 @@ public partial class @PlayerMovement: IInputActionCollection2, IDisposable
             ""actions"": [
                 {
                     ""name"": ""Forward"",
-                    ""type"": ""Button"",
+                    ""type"": ""Value"",
                     ""id"": ""511f0510-9404-451f-aca8-a83ac9aad6c9"",
-                    ""expectedControlType"": """",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true

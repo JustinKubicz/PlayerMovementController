@@ -10,10 +10,9 @@ public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControl
 {
 
     private PlayerMovement inpt;
-    private float moveForce = 25.0f; 
-    
-    private float curInput;
-    public Rigidbody rb;
+    private float moveForce = 75.0f;
+    private Vector3 dirVec = new Vector3();
+    public Rigidbody playerRb;
     public Camera Cam;
     public void OnEnable()
     {
@@ -39,10 +38,15 @@ public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControl
 
     public void OnForward(InputAction.CallbackContext context)
     {
-            Vector2 in = context.ReadValue<Vector2>();
-            this.curInput = context.ReadValue<float>();
-            
-            
+        if (context.performed)
+        {
+            float inputY = context.ReadValue<float>();
+            this.dirVec.z = inputY;
+            this.dirVec = Cam.transform.TransformVector(dirVec).normalized;
+            this.dirVec.y = 0;
+            playerRb.AddForce(dirVec * this.moveForce);
+
+        }
        
     }
 
@@ -53,12 +57,28 @@ public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControl
 
     public void OnLeft(InputAction.CallbackContext context)
     {
-        Debug.Log(context.phase);
+        if (context.performed)
+        {
+            float inputX = context.ReadValue<float>();
+            this.dirVec.x = -inputX;
+            this.dirVec = Cam.transform.TransformVector(dirVec).normalized;
+            this.dirVec.y = 0;
+            playerRb.AddForce(dirVec * this.moveForce);
+
+        }
     }
 
     public void OnRight(InputAction.CallbackContext context)
     {
-        Debug.Log(context.phase);
+        if (context.performed)
+        {
+            float inputX = context.ReadValue<float>();
+            this.dirVec.x = inputX;
+            this.dirVec = Cam.transform.TransformVector(dirVec).normalized;
+            this.dirVec.y = 0;
+            playerRb.AddForce(dirVec * this.moveForce);
+
+        }
     }
 
     // Start is called before the first frame update
