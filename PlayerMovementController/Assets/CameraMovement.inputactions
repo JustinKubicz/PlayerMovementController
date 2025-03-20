@@ -1,0 +1,76 @@
+{
+    "name": "CameraMovement",
+    "maps": [
+        {
+            "name": "Camera Controls",
+            "id": "f6384aee-3a7d-4159-9a36-227578eb6f29",
+            "actions": [
+                {
+                    "name": "CircleL",
+                    "type": "Value",
+                    "id": "e99734b7-7102-4f68-8585-5d06c26a77d0",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "CircleR",
+                    "type": "Button",
+                    "id": "b86e7aab-c5e2-4107-be5d-d107677d442f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "56d37d92-8abc-434f-bc4c-7ee628fa4da8",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CircleL",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "089def10-1e4c-499a-8597-3d84ddd0ff34",
+                    "path": "<Gamepad>/rightStick/left",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CircleL",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5c294199-fab0-4cf1-bbf6-84253ae118d1",
+                    "path": "<Gamepad>/rightStick/right",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CircleR",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "572e9772-6aab-417a-a331-1ac3d49989bf",
+                    "path": "<Keyboard>/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "CircleR",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Windows;
 
 public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControlsActions
 
@@ -10,21 +11,30 @@ public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControl
 {
 
     private PlayerMovement inpt;
-    private float moveForce = 500.0f;
+    private float moveForce = 50.0f;
+    private float jumpForce = 500f;
     private bool movingF = false;
     private bool movingL = false;
     private bool movingR = false;
     private bool movingB = false;
+    private float maxSpeed = 5f;
     private Vector3 dirVec = new Vector3();
     public Rigidbody playerRb;
     public Camera Cam;
     
 
-
-    public enum moving
-    {
-
+    private bool CheckMovementFlags()
+    {//if we're moving return false, else return true;
+        if(this.movingL || this.movingR || this.movingF || this.movingB)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
+   
     public void OnEnable()
     {
         if(this.inpt == null)
@@ -48,13 +58,20 @@ public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControl
         {
             this.movingB = true;
             float inputY = context.ReadValue<float>();
-            this.dirVec.z = -inputY;
+            Vector3 temp = this.dirVec;
+            temp.z = -inputY;
+            this.dirVec = temp;
 
 
         }
         if (context.canceled)
         {
             this.movingB = false;
+            if (this.CheckMovementFlags())
+            {
+                this.StopMoving();
+            }
+            
         }
     }
 
@@ -64,13 +81,18 @@ public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControl
         {
             this.movingF = true;
             float inputY = context.ReadValue<float>();
-            this.dirVec.z = inputY;
-           
+            Vector3 temp = this.dirVec;
+            temp.z = inputY;
+            this.dirVec = temp;
 
         }
         if (context.canceled)
         {
             this.movingF = false;
+            if (this.CheckMovementFlags())
+            {
+                this.StopMoving();
+            }
         }
        
     }
@@ -80,12 +102,13 @@ public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControl
         if (context.performed)
         {   this.dirVec.y = 1;
             this.dirVec = Cam.transform.TransformVector(dirVec).normalized;
-            playerRb.AddForce(dirVec * this.moveForce);
+            playerRb.AddForce(dirVec * this.jumpForce);
             
         }
         if (context.canceled)
         {
             this.dirVec.y = 0;
+
         }
     }
 
@@ -95,14 +118,25 @@ public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControl
         {
             this.movingL = true;
             float inputX = context.ReadValue<float>();
-            this.dirVec.x = -inputX;
-
+       
+            Vector3 temp = this.dirVec;
+            temp.x = -inputX;
+            this.dirVec = temp;
 
         }
         if (context.canceled)
         {
             this.movingL = false;
+            if (this.CheckMovementFlags())
+            {
+                this.StopMoving();
+            }
         }
+    }
+
+    private void StopMoving()
+    {
+        this.playerRb.velocity = Vector3.zero;
     }
 
     public void OnRight(InputAction.CallbackContext context)
@@ -111,13 +145,18 @@ public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControl
         {
             this.movingR = true;
             float inputX = context.ReadValue<float>();
-            this.dirVec.x = inputX;
-
+            Vector3 temp = this.dirVec;
+            temp.x = inputX;
+            this.dirVec = temp;
 
         }
         if (context.canceled)
         {
             this.movingR = false;
+            if (this.CheckMovementFlags())
+            {
+                this.StopMoving();
+            }
         }
     }
 
@@ -128,11 +167,15 @@ public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControl
     }
     void FixedUpdate()
     {
-        if (this.movingF || this.movingR || this.movingL || this.movingB)
+        if (this.playerRb.velocity.magnitude < this.maxSpeed)
         {
-            this.dirVec = Cam.transform.TransformVector(dirVec).normalized;
-            this.dirVec.y = 0;
-            playerRb.AddForce(dirVec * this.moveForce);
+            if (this.movingF || this.movingR || this.movingL || this.movingB)
+            {
+                Vector3 temp = this.dirVec;
+                temp = Cam.transform.TransformVector(temp).normalized;
+                temp.y = 0;
+                playerRb.AddForce(temp * this.moveForce);
+            }
         }
     }
 
