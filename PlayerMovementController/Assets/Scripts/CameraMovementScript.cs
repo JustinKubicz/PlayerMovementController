@@ -23,7 +23,7 @@ public class CameraMovementScript : MonoBehaviour, CameraMovement.ICameraControl
        
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (this.target)
         {
@@ -32,11 +32,7 @@ public class CameraMovementScript : MonoBehaviour, CameraMovement.ICameraControl
         if (this.cameraTurningL) turnCamera(true);
         if (this.cameraTurningR) turnCamera(false);
     }
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+   
 
     public void OnCircleL(InputAction.CallbackContext context)
     {

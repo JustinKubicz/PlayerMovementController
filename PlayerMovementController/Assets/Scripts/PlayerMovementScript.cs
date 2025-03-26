@@ -175,6 +175,8 @@ public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControl
                 temp = Cam.transform.TransformVector(temp).normalized;
                 temp.y = 0;
                 playerRb.AddForce(temp * this.moveForce);
+
+                Debug.DrawLine(playerRb.position, playerRb.position + temp);
             }
         }
     }
