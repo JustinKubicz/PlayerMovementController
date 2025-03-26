@@ -28,66 +28,35 @@ public partial class @CameraMovement: IInputActionCollection2, IDisposable
             ""id"": ""f6384aee-3a7d-4159-9a36-227578eb6f29"",
             ""actions"": [
                 {
-                    ""name"": ""CircleL"",
+                    ""name"": ""Rotate"",
                     ""type"": ""Value"",
-                    ""id"": ""e99734b7-7102-4f68-8585-5d06c26a77d0"",
-                    ""expectedControlType"": """",
+                    ""id"": ""c7652540-8d5f-4c81-bbae-f8d7f6486438"",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""CircleR"",
-                    ""type"": ""Button"",
-                    ""id"": ""b86e7aab-c5e2-4107-be5d-d107677d442f"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
                 {
                     ""name"": """",
-                    ""id"": ""56d37d92-8abc-434f-bc4c-7ee628fa4da8"",
-                    ""path"": ""<Keyboard>/z"",
+                    ""id"": ""0d26c078-27d1-4a7e-b354-c392d8de4b98"",
+                    ""path"": ""<Mouse>/delta"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""CircleL"",
+                    ""action"": ""Rotate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
                 {
                     ""name"": """",
-                    ""id"": ""089def10-1e4c-499a-8597-3d84ddd0ff34"",
-                    ""path"": ""<Gamepad>/rightStick/left"",
+                    ""id"": ""2afeb97a-e7b9-4b31-b41d-37f2be302b10"",
+                    ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""CircleL"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""5c294199-fab0-4cf1-bbf6-84253ae118d1"",
-                    ""path"": ""<Gamepad>/rightStick/right"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""CircleR"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""572e9772-6aab-417a-a331-1ac3d49989bf"",
-                    ""path"": ""<Keyboard>/x"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""CircleR"",
+                    ""action"": ""Rotate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -98,8 +67,7 @@ public partial class @CameraMovement: IInputActionCollection2, IDisposable
 }");
         // Camera Controls
         m_CameraControls = asset.FindActionMap("Camera Controls", throwIfNotFound: true);
-        m_CameraControls_CircleL = m_CameraControls.FindAction("CircleL", throwIfNotFound: true);
-        m_CameraControls_CircleR = m_CameraControls.FindAction("CircleR", throwIfNotFound: true);
+        m_CameraControls_Rotate = m_CameraControls.FindAction("Rotate", throwIfNotFound: true);
     }
 
     ~@CameraMovement()
@@ -166,14 +134,12 @@ public partial class @CameraMovement: IInputActionCollection2, IDisposable
     // Camera Controls
     private readonly InputActionMap m_CameraControls;
     private List<ICameraControlsActions> m_CameraControlsActionsCallbackInterfaces = new List<ICameraControlsActions>();
-    private readonly InputAction m_CameraControls_CircleL;
-    private readonly InputAction m_CameraControls_CircleR;
+    private readonly InputAction m_CameraControls_Rotate;
     public struct CameraControlsActions
     {
         private @CameraMovement m_Wrapper;
         public CameraControlsActions(@CameraMovement wrapper) { m_Wrapper = wrapper; }
-        public InputAction @CircleL => m_Wrapper.m_CameraControls_CircleL;
-        public InputAction @CircleR => m_Wrapper.m_CameraControls_CircleR;
+        public InputAction @Rotate => m_Wrapper.m_CameraControls_Rotate;
         public InputActionMap Get() { return m_Wrapper.m_CameraControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -183,22 +149,16 @@ public partial class @CameraMovement: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_CameraControlsActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_CameraControlsActionsCallbackInterfaces.Add(instance);
-            @CircleL.started += instance.OnCircleL;
-            @CircleL.performed += instance.OnCircleL;
-            @CircleL.canceled += instance.OnCircleL;
-            @CircleR.started += instance.OnCircleR;
-            @CircleR.performed += instance.OnCircleR;
-            @CircleR.canceled += instance.OnCircleR;
+            @Rotate.started += instance.OnRotate;
+            @Rotate.performed += instance.OnRotate;
+            @Rotate.canceled += instance.OnRotate;
         }
 
         private void UnregisterCallbacks(ICameraControlsActions instance)
         {
-            @CircleL.started -= instance.OnCircleL;
-            @CircleL.performed -= instance.OnCircleL;
-            @CircleL.canceled -= instance.OnCircleL;
-            @CircleR.started -= instance.OnCircleR;
-            @CircleR.performed -= instance.OnCircleR;
-            @CircleR.canceled -= instance.OnCircleR;
+            @Rotate.started -= instance.OnRotate;
+            @Rotate.performed -= instance.OnRotate;
+            @Rotate.canceled -= instance.OnRotate;
         }
 
         public void RemoveCallbacks(ICameraControlsActions instance)
@@ -218,7 +178,6 @@ public partial class @CameraMovement: IInputActionCollection2, IDisposable
     public CameraControlsActions @CameraControls => new CameraControlsActions(this);
     public interface ICameraControlsActions
     {
-        void OnCircleL(InputAction.CallbackContext context);
-        void OnCircleR(InputAction.CallbackContext context);
+        void OnRotate(InputAction.CallbackContext context);
     }
 }

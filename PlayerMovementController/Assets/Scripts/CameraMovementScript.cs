@@ -8,15 +8,31 @@ using UnityEngine.InputSystem;
 public class CameraMovementScript : MonoBehaviour, CameraMovement.ICameraControlsActions
 
 
-{   
-    
+{
+    private float sens = 100f;
+    private CameraMovement inpt;
     public Camera cam;
     public Rigidbody target;
     private Vector3 offset = new Vector3(-10, 4, 0);
-    private bool cameraTurningL;
-    private bool cameraTurningR;
+    //private bool rotating = false;
+    private float rotateTransform;
 
-
+    private void OnEnable()
+    {
+        if (this.inpt == null)
+        {
+            this.inpt = new CameraMovement();
+            this.inpt.CameraControls.SetCallbacks(this);
+        }
+        this.inpt.Enable();
+    }
+    public void OnDisable()
+    {
+        if (this.inpt != null)
+        {
+            this.inpt.Disable();
+        }
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -28,44 +44,20 @@ public class CameraMovementScript : MonoBehaviour, CameraMovement.ICameraControl
         if (this.target)
         {
             this.cam.transform.position = this.target.transform.position + offset;
+            ////this.cam.transform.rotation.SetLookRotation(this.target.transform.position, Vector3.up);
+            //Debug.Log("this.cam.transform.rotation.z + this.rotateTransform: " + (this.cam.transform.rotation.z + this.rotateTransform));
+            //this.cam.transform.Rotate(new Vector3(this.cam.transform.rotation.x , this.cam.transform.rotation.y, this.cam.transform.rotation.z+ this.rotateTransform));
+
         }
-        if (this.cameraTurningL) turnCamera(true);
-        if (this.cameraTurningR) turnCamera(false);
     }
    
-
-    public void OnCircleL(InputAction.CallbackContext context)
+    public void OnRotate(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
-            this.cameraTurningL = true;
-            this.cameraTurningR = false; 
+            this.rotateTransform = context.ReadValue<Vector2>().x;                        
         }
-        if (context.canceled)
-        {
-            this.stopTurningCamera();
-        }
+ 
     }
 
-    public void OnCircleR(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            this.cameraTurningR = true;
-            this.cameraTurningL = false;
-        }
-        if (context.canceled)
-        {
-            this.stopTurningCamera();
-        }
-    }
-    private void stopTurningCamera()
-    {
-        throw new NotImplementedException();
-    }
-    private void turnCamera(bool lOrR)
-    {//true turns left, false turns right;
-    
-
-    }
 }
