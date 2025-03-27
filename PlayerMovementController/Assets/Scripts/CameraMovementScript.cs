@@ -9,13 +9,12 @@ public class CameraMovementScript : MonoBehaviour, CameraMovement.ICameraControl
 
 
 {
-    private float sens = 100f;
+    public float Hsens = 0.50f;
+    public float Vsens = 0.05f;
     private CameraMovement inpt;
-    public Camera cam;
-    public Rigidbody target;
+    public GameObject camAnchor;
     private Vector3 offset = new Vector3(-10, 4, 0);
-    //private bool rotating = false;
-    private float rotateTransform;
+    private Vector2 rotateTransform;
 
     private void OnEnable()
     {
@@ -41,23 +40,24 @@ public class CameraMovementScript : MonoBehaviour, CameraMovement.ICameraControl
 
     private void Update()
     {
-        if (this.target)
-        {
-            this.cam.transform.position = this.target.transform.position + offset;
-            ////this.cam.transform.rotation.SetLookRotation(this.target.transform.position, Vector3.up);
-            //Debug.Log("this.cam.transform.rotation.z + this.rotateTransform: " + (this.cam.transform.rotation.z + this.rotateTransform));
-            //this.cam.transform.Rotate(new Vector3(this.cam.transform.rotation.x , this.cam.transform.rotation.y, this.cam.transform.rotation.z+ this.rotateTransform));
-
-        }
     }
    
     public void OnRotate(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
-            this.rotateTransform = context.ReadValue<Vector2>().x;                        
+            Vector2 mouseDelta = context.ReadValue<Vector2>();
+            this.rotateTransform.x += (mouseDelta.x * this.Hsens);
+            this.rotateTransform.y += (mouseDelta.y * this.Vsens);
+            this.rotateTransform.y = Mathf.Clamp(this.rotateTransform.y, -80f, 0f);
+            this.Rotate();
         }
  
     }
 
+    private void Rotate()
+    {
+        Quaternion quat = Quaternion.Euler(0f, this.rotateTransform.x, this.rotateTransform.y);
+        this.camAnchor.transform.rotation = quat;
+    }
 }
