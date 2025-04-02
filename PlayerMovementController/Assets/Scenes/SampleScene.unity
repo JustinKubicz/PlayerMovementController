@@ -610,6 +610,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37db14b56152a2747ae5c50d18de76cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  accelerationRate: 1
+  stoppingPower: 1
+  jumpForce: 1
+  maxSpeed: 1
   playerRb: {fileID: 653766535}
   cam: {fileID: 330585545}
 --- !u!1 &832575517

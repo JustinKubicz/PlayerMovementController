@@ -3,30 +3,39 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 using UnityEngine.Windows;
 
 public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControlsActions
 
 
-{
-
-    private PlayerMovement inpt;
-    private float moveForce = 50.0f;
-    public float jumpForce = 600f;
-    public float maxSpeed = 5f;
-    private Vector3 dirVec = new Vector3();
+{   //CONFIGURABLES
+    [Range(0f, 1f)]
+    public float accelerationRate = 1f;
+    [Range(0f, 1f)]
+    public float stoppingPower = 1f;
+    [Range(0f, 1f)]
+    public float jumpForce = 1f;
+    [Range(0f, 1f)]
+    public float maxSpeed = 1f;
     public Rigidbody playerRb;
     public Camera cam;
+
+
+    //INTERNALS
+    private PlayerMovement inpt;    
+    private Vector3 dirVec = new Vector3();
     private State curState;
     private bool jumped = false;
     private bool coyoteTimerStarted = false;
+    private bool decelerate = false;
     private enum State{
-        INVALID =   0,
-        GROUNDED =  1,
-        WALKING =   2,
-        AIRBORNE =  3,
-        SLIDING =   4,
-        COYOTETIME = 5,
+        INVALID =       0,
+        GROUNDED =      1,
+        WALKING =       2,
+        AIRBORNE =      3,
+        SLIDING =       4,
+        COYOTETIME =    5,
         }
 
    
@@ -59,7 +68,7 @@ public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControl
                 this.jumped = true;
                 this.dirVec.y = 1;
                 this.dirVec = cam.transform.TransformVector(dirVec).normalized;
-                playerRb.AddForce(dirVec * this.jumpForce);
+                playerRb.AddForce(dirVec * (this.jumpForce * 800f));
             }
         }
     }
@@ -68,7 +77,12 @@ public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControl
     private void StopMoving()
     {   
         this.curState = State.GROUNDED;
-        this.playerRb.velocity = Vector3.zero;
+        if (this.playerRb.velocity != Vector3.zero)
+        {
+            this.decelerate = true;
+       
+        }
+        
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -100,8 +114,7 @@ public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControl
                 Vector3 temp = this.dirVec;
                 temp = cam.transform.TransformVector(temp).normalized;
                 temp.y = 0;
-                if(this.playerRb.velocity.magnitude <= this.maxSpeed) playerRb.AddForce(temp * this.moveForce);
-            Debug.Log(this.playerRb.velocity.magnitude);
+                if(this.playerRb.velocity.magnitude <= (this.maxSpeed * 8f)) playerRb.AddForce((this.accelerationRate*1000) * Time.fixedDeltaTime * temp );
             }
         RaycastHit hit;
         if(Physics.Raycast(this.transform.position, this.transform.TransformDirection(Vector3.down), out hit, Mathf.Infinity))
@@ -112,7 +125,22 @@ public class PlayerMovementScript : MonoBehaviour, PlayerMovement.IPlayerControl
         {
             StartCoroutine(CoyoteTimer());
         }
-
+        if (this.decelerate && !(this.playerRb.velocity.x <= 0.01f && this.playerRb.velocity.z <= 0.01f))
+        {
+            this.playerRb.AddForce( Time.fixedDeltaTime* (this.stoppingPower * 1000) * -this.playerRb.velocity);
+            Debug.Log("player vel: " + this.playerRb.velocity);
+            Debug.Log(this.decelerate);
+          
+        }else if(this.playerRb.velocity.x <= 0.01f && this.playerRb.velocity.z <= 0.01f) this.decelerate = false;
+        RaycastHit slopes;
+        Vector3 rayEnd = this.cam.transform.forward;
+        rayEnd.y = 0;
+        if(Physics.Raycast(this.transform.position, rayEnd, out slopes,10f)){
+            //SLOPES LOGIC BEING BUILT HERE!
+            Debug.Log(Vector3.Angle(slopes.normal, Vector3.up));
+            Debug.DrawLine(this.transform.position, slopes.point, Color.red);
+            Debug.DrawLine(slopes.point, slopes.normal, Color.red);
+        }
         
     }
     IEnumerator CoyoteTimer()
